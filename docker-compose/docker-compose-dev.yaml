@@ -25,7 +25,6 @@ services:
     restart: always
     volumes:
       - ../frontend:/app
-      - /app/node_modules
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -39,7 +38,6 @@ services:
     restart: always
     volumes:
       - ../frontend:/app
-      - /app/node_modules
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -59,7 +57,6 @@ services:
       - ../config/nginx/certs:/etc/letsencrypt
     depends_on:
       - pg-0
-      - pg-1
       - redis-0
       - redis-1
       - redis-2
@@ -82,7 +79,6 @@ services:
       - ../config/nginx/certs:/etc/letsencrypt
     depends_on:
       - pg-0
-      - pg-1
       - redis-0
       - redis-1
       - redis-2
@@ -104,7 +100,6 @@ services:
       - ../config/app-consumer:/etc/app-consumer
     depends_on:
       - pg-0
-      - pg-1
       - redis-0
       - redis-1
       - redis-2
@@ -126,7 +121,6 @@ services:
       - ../config/app-consumer:/etc/app-consumer
     depends_on:
       - pg-0
-      - pg-1
       - redis-0
       - redis-1
       - redis-2
@@ -139,9 +133,9 @@ services:
 
   pg-0:
     container_name: pg-0
-    image: docker.io/bitnami/postgresql-repmgr:16
-    restart: always
     user: "root"
+    image: docker.io/bitnami/postgresql:16
+    restart: always
     ports:
       - "5432:5432"
     volumes:
@@ -152,39 +146,6 @@ services:
       - POSTGRESQL_USERNAME=${POSTGRES_USER}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRESQL_DATABASE=postgres
-      - REPMGR_PASSWORD=${POSTGRES_PASSWORD}
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PRIMARY_PORT=5432
-      - REPMGR_PARTNER_NODES=pg-0,pg-1:5432
-      - REPMGR_NODE_NAME=pg-0
-      - REPMGR_NODE_NETWORK_NAME=pg-0
-      - REPMGR_PORT_NUMBER=5432
-
-  pg-1:
-    container_name: pg-1
-    image: docker.io/bitnami/postgresql-repmgr:16
-    restart: always
-    user: "root"
-    ports:
-      - "5431:5432"
-    volumes:
-      - .data/pg-1:/bitnami/postgresql/data
-      - ../config/postgres/pg-1:/bitnami/postgresql/conf
-    depends_on:
-      pg-0:
-        condition: "service_started"
-    environment:
-      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_USERNAME=${POSTGRES_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_DATABASE=postgres
-      - REPMGR_PASSWORD=${POSTGRES_PASSWORD}
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PRIMARY_PORT=5432
-      - REPMGR_PARTNER_NODES=pg-0,pg-1:5432
-      - REPMGR_NODE_NAME=pg-1
-      - REPMGR_NODE_NETWORK_NAME=pg-1
-      - REPMGR_PORT_NUMBER=5432
 
   redis-0:
     container_name: redis-0
