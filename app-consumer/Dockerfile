@@ -1,0 +1,14 @@
+# Build stage
+FROM golang:1.22-alpine AS builder
+WORKDIR /app-consumer
+COPY . .
+RUN go mod download
+RUN CGO_ENABLED=0 go build -o /app-consumer/app /app-consumer/cmd/main.go
+
+# Run stage
+FROM alpine
+WORKDIR /app-consumer
+COPY --from=builder /app-consumer/app .
+
+EXPOSE 80
+ENTRYPOINT [ "./app", "-config", "/etc/app-consumer/dev.yaml", "-env", "/etc/app-consumer/.env"]

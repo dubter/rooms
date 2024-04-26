@@ -1,0 +1,38 @@
+env: dev
+
+http:
+  port: "443"
+  read_timeout: 10s
+  write_timeout: 10s
+  shutdown_timeout: 10s
+  limiter:
+    rps: 10
+    burst: 20
+    ttl: 10m
+  tls:
+    cert: "/etc/letsencrypt/live/rooms.servebeer.com/cert.pem"
+    key: "/etc/letsencrypt/live/rooms.servebeer.com/privkey.pem"
+
+chat:
+  count_messages_get: 100
+
+auth:
+  access_token_ttl: 30m
+  refresh_Token_ttl: 720h #30 days
+
+kafka:
+  topic: messages
+  consumer_group: app-websocket-0
+  brokers:
+    - kafka-0:9092
+    - kafka-1:9092
+    - kafka-2:9092
+
+redis:
+  addrs:
+    - redis-0:6379
+    - redis-1:6379
+    - redis-2:6379
+    - redis-3:6379
+    - redis-4:6379
+    - redis-5:6379

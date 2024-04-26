@@ -1,0 +1,28 @@
+env: local
+
+http:
+  port: "80"
+  read_timeout: 10s
+  write_timeout: 10s
+  shutdown_timeout: 10s
+  limiter:
+    rps: 10
+    burst: 20
+    ttl: 10m
+
+chat:
+  count_messages_get: 100
+
+auth:
+  access_token_ttl: 30m
+  refresh_Token_ttl: 720h #30 days
+
+kafka:
+  topic: messages
+  consumer_group: app-websocket-local
+  brokers:
+    - kafka-local:9092
+
+redis:
+  addrs:
+    - redis-local:6379

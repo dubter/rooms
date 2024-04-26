@@ -1,0 +1,104 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build-app-client:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        work_dir:
+          - ./homework/app-client
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
+
+      - name: Build
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go build -v ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ${{ matrix.work_dir }}
+
+      - name: Test
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go test -v -race -coverpkg=./... ./...
+
+  build-app-websocket:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        work_dir:
+          - ./homework/app-websocket
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
+
+      - name: Build
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go build -v ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ${{ matrix.work_dir }}
+
+      - name: Test
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go test -v -race -coverpkg=./... ./...
+
+  build-app-consumer:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        work_dir:
+          - ./homework/app-consumer
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
+
+      - name: Build
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go build -v ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ${{ matrix.work_dir }}
+
+      - name: Test
+        working-directory: ${{ matrix.work_dir }}
+        run: |
+          go test -v -race -coverpkg=./... ./...

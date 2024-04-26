@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  nginx-local:
+    container_name: nginx-local
+    restart: always
+    image: nginx:latest
+    user: "root"
+    ports:
+      - "80:80"
+    volumes:
+      - ../config/nginx/nginx-local.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - nodejs-local
+      - app-websocket-local
+      - app-consumer-local
+
+  nodejs-local:
+    container_name: nodejs-local
+    user: "root"
+    restart: always
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    environment:
+      - 'NEXT_PUBLIC_API_URL=http://localhost/api'
+      - 'NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost/api'
+
+  app-websocket-local:
+    container_name: app-websocket-local
+    user: "root"
+    build:
+      context: ../app-websocket
+      dockerfile: Dockerfile-local
+    restart: always
+    volumes:
+      - ../config/app-websocket/app-websocket-local:/etc/app-websocket
+    depends_on:
+      - pg-local
+      - redis-local
+      - kafka-local
+
+  app-consumer-local:
+    container_name: app-consumer-local
+    user: "root"
+    build:
+      context: ../app-consumer
+      dockerfile: Dockerfile-local
+    restart: always
+    volumes:
+      - ../config/app-consumer:/etc/app-consumer
+    depends_on:
+      - pg-local
+      - redis-local
+      - kafka-local
+
+  pg-local:
+    container_name: pg-local
+    user: "root"
+    image: docker.io/bitnami/postgresql:16
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/pg-local:/bitnami/postgresql/data
+      - ../config/postgres/pg-local:/bitnami/postgresql/conf
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=postgres
+
+  redis-local:
+    container_name: redis-local
+    user: "root"
+    image: docker.io/bitnami/redis:7.2
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - .data/redis-local:/bitnami/redis/data
+      - ../config/redis/redis-local:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  kafka-local:
+    container_name: kafka-local
+    image: docker.io/bitnami/kafka:3.7
+    restart: always
+    user: "root"
+    ports:
+      - "9092:9092"
+    volumes:
+      - .data/kafka-local:/bitnami/kafka/data
+      - ../config/kafka/kafka-local:/bitnami/kafka/config

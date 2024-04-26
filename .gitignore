@@ -1,0 +1,4 @@
+./homework/.data
+./.idea
+./config/nginx/certs
+./config/redis/

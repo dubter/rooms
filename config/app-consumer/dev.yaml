@@ -1,0 +1,18 @@
+env: dev
+
+kafka:
+  topic: messages
+  consumer_group: app-consumer-0
+  brokers:
+    - kafka-0:9092
+    - kafka-1:9092
+    - kafka-2:9092
+
+redis:
+  addrs:
+    - redis-0:6379
+    - redis-1:6379
+    - redis-2:6379
+    - redis-3:6379
+    - redis-4:6379
+    - redis-5:6379

@@ -1,0 +1,11 @@
+env: local
+
+kafka:
+  topic: messages
+  consumer_group: app-consumer-local
+  brokers:
+    - kafka-local:9092
+
+redis:
+  addrs:
+    - redis-local:6379
