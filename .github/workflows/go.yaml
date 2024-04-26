@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         work_dir:
-          - ./homework/app-client
+          - ./app-client
     steps:
       - uses: actions/checkout@v3
 
@@ -47,7 +47,7 @@ jobs:
       fail-fast: false
       matrix:
         work_dir:
-          - ./homework/app-websocket
+          - ./app-websocket
     steps:
       - uses: actions/checkout@v3
 
@@ -78,7 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         work_dir:
-          - ./homework/app-consumer
+          - ./app-consumer
     steps:
       - uses: actions/checkout@v3
 
