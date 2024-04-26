@@ -1,4 +1,4 @@
-./homework/.data
+./docker-compose/.data
 ./.idea
 ./config/nginx/certs
 ./config/redis/
