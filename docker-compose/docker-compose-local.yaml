@@ -24,7 +24,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend:/app
-      - /app/node_modules
     environment:
       - 'NEXT_PUBLIC_API_URL=http://localhost/api'
       - 'NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost/api'
