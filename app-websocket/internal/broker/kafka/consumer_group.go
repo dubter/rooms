@@ -66,7 +66,7 @@ func (cg *ConsumerGroup) Consume(ctx context.Context, handler domain.MessageHand
 					res <- err
 				}
 
-				cg.logger.Error("Failed to consume from kafka", err)
+				cg.logger.Error("Failed to consume from kafka", slog.String("error", err.Error()))
 			}
 
 		}
@@ -78,7 +78,7 @@ func (cg *ConsumerGroup) Consume(ctx context.Context, handler domain.MessageHand
 			return ctx.Err()
 
 		case err := <-cg.client.Errors():
-			cg.logger.Error("Failed to write access log entry:", err)
+			cg.logger.Error("Failed to write access log entry:", slog.String("error", err.Error()))
 
 		case err := <-res:
 			if err != nil {
