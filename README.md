@@ -4,8 +4,6 @@
 
 Вы можете пользоваться сервисом **Rooms** уже сейчас: [rooms.servebeer.com](https://rooms.servebeer.com)
 
-Вы также можете ознакомится с [V1-версией](https://github.com/central-university-dev/2024-spring-ab-go-hw-1-template-dubter) проекта.
-
 Что было добавлено по сравнению прошлой версией:
 - Добавлены новые компоненты бэкенда: Kafka, Redis и микросервисы `app-consumer`, `app-websocket` которые можно создавать в нескольких инстансах.
 - Образы для Postgres, Redis и Kafka взяты с [bitnami/containers](https://github.com/bitnami/containers). Одно из лучших решений на рынке.
