@@ -171,7 +171,7 @@ func (h *Handler) JoinRoom(w http.ResponseWriter, r *http.Request) {
 
 	err = h.chatPusher.Subscribe(r.Context(), cl)
 	if err != nil {
-		h.logger.Error("failed to subscribe:", err)
+		h.logger.Error("failed to subscribe:", slog.String("error", err.Error()))
 	}
 
 	go cl.WriteMessage()

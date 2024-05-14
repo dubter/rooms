@@ -46,7 +46,7 @@ func (c *Client) ReadMessage(ctx context.Context) {
 	defer func() {
 		err := c.Pusher.Unsubscribe(ctx, c)
 		if err != nil {
-			c.Logger.Error("failed to Unsubscribe from room:", err)
+			c.Logger.Error("failed to Unsubscribe from room:", slog.String("error", err.Error()))
 		}
 
 		c.Close()
@@ -75,7 +75,7 @@ func (c *Client) ReadMessage(ctx context.Context) {
 
 		err = c.Pusher.PushMessage(ctx, msg)
 		if err != nil {
-			c.Logger.Error("failed to push message:", err)
+			c.Logger.Error("failed to push message:", slog.String("error", err.Error()))
 		}
 	}
 }
@@ -83,6 +83,6 @@ func (c *Client) ReadMessage(ctx context.Context) {
 func (c *Client) Close() {
 	err := c.Conn.Close()
 	if err != nil {
-		c.Logger.Error("failed to close WebSocket connection:", err)
+		c.Logger.Error("failed to close WebSocket connection:", slog.String("error", err.Error()))
 	}
 }
