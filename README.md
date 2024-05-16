@@ -1,5 +1,10 @@
 ### V2 Rooms
 
+
+Видео обзор проекта на YouTube: 
+
+<a href="https://www.youtube.com/watch?v=qNGk5E-8bGw" title="rooms"><img src="https://i.ibb.co/7YVMm0P/in-2.png" width="20%" alt="in-2" border="0" /></a> 
+
 В данном репозитории реализована V2-версия мессенджера **Rooms**. 
 
 Вы можете пользоваться сервисом **Rooms** уже сейчас: [rooms.servebeer.com](https://rooms.servebeer.com)
