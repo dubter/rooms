@@ -1,5 +1,6 @@
-### V2 Rooms
+[![Go](https://github.com/dubter/rooms/actions/workflows/go.yaml/badge.svg)](https://github.com/dubter/rooms/actions/workflows/go.yaml)
 
+### V2 Rooms
 
 Видео обзор проекта на YouTube: 
 
