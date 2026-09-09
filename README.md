@@ -1,85 +1,99 @@
-### V2 Rooms
+### Rooms V2
 
+Video walkthrough on YouTube:
 
-Видео обзор проекта на YouTube: 
+<a href="https://www.youtube.com/watch?v=qNGk5E-8bGw" title="rooms"><img src="https://i.ibb.co/7YVMm0P/in-2.png" width="20%" alt="in-2" border="0" /></a>
 
-<a href="https://www.youtube.com/watch?v=qNGk5E-8bGw" title="rooms"><img src="https://i.ibb.co/7YVMm0P/in-2.png" width="20%" alt="in-2" border="0" /></a> 
+This repository holds the V2 version of the **Rooms** messenger.
 
-В данном репозитории реализована V2-версия мессенджера **Rooms**. 
+The service is live at [rooms.servebeer.com](https://rooms.servebeer.com).
 
-Вы можете пользоваться сервисом **Rooms** уже сейчас: [rooms.servebeer.com](https://rooms.servebeer.com)
+What V2 added over the previous version:
 
-Что было добавлено по сравнению прошлой версией:
-- Добавлены новые компоненты бэкенда: Kafka, Redis и микросервисы `app-consumer`, `app-websocket` которые можно создавать в нескольких инстансах.
-- Образы для Postgres, Redis и Kafka взяты с [bitnami/containers](https://github.com/bitnami/containers). Одно из лучших решений на рынке.
-Каждый из 3х компонент является отказоустойчивым кластером c репликацией.
-- Все конфиги хранятся в едином месте - папке `config`
-- Появился frontend `nodejs` и `nginx` прокси для маршрутизации запросов в компоненты frontend и backend
-- Захостили на [cloud.ru](https://cloud.ru) наш сервис и используя `letsencrypt` сгенерировали сертификаты для HTTPS протокола
+- New backend components: Kafka, Redis, and the `app-consumer` and `app-websocket` microservices,
+  each of which can run in several instances.
+- Postgres, Redis and Kafka images are taken from [bitnami/containers](https://github.com/bitnami/containers).
+  All three run as fault-tolerant clusters with replication.
+- All configuration lives in one place, the `config` directory.
+- A `nodejs` frontend, with `nginx` in front routing requests to the frontend and backend components.
+- Hosted on [cloud.ru](https://cloud.ru), with HTTPS certificates issued through `letsencrypt`.
 
-### Архитектура V2
+### V2 architecture
 
 ![](architecture/system-design-v2.png)
 
-* Замечание: *Postgres Replica* на данный момент не реализована в продакшене и в коде в целом. Это дело перенесено на следующий релиз.
+*Note: the Postgres replica is not yet implemented, in production or in the code. It is deferred to the next release.*
 
-### Дальнейшие планы для V3 - логика
-Что в планах доработать (много что):
-- Разделить на микросервисы сервера, отвечающие за Websocket connection и за аутентификацию/авторизацию
-- Те микросервисы, которые отвечают за аутентификацию/авторизацию оставить работать с `Postgres`, а сами сообщения хранить в `Cassandra`.
-- Доделать техдолг по *Postgres Replica*
+### Planned for V3 — application logic
 
-### Дальнейшие планы для V4 - инфраструктура
-- После того как все, что выше сказано будет сделано, нужно будет перенести сервис с `docker-compose` на `Kubernetes`, используя helm-charts все тех же [bitnami/charts](https://github.com/bitnami/charts)
-- Сделать поверх кубера весь Observability: логи используя `fluentd`, метрики - `prometheus`, дашборды - `grafana`, трейсы - `jaeger`. Лучше всего будет поставить операторы в кубере, которые будут мониторить эти ресуры. И понадобится экспорт этого всего в какую-нибудь БД.
-- Перевести Nginx Load Balancer в Ingress Operator
-- Важно настроить такую технологию как `AFFINITY`, чтобы поды одного микросервиса не деплоились на одной ноде
-- CI/CD: из подходящего берем [fluxcd](https://fluxcd.io/) для CD и Github Actions для CI
+- Split the WebSocket connection handling and the authentication/authorization servers into separate microservices.
+- Keep authentication and authorization on `Postgres`, and move message storage to `Cassandra`.
+- Pay down the Postgres replica debt.
 
-### Дальнейшие планы для V5 - облако
-- Используя Terraform, пишем инфраструктуру под `Managed Kubernetes` в облаке. Конвертируем `yaml` в `terraform`, используя [утилиту k2tf](https://github.com/sl1pm4t/k2tf) 
-- Разделяем на Prod и Dev стэнд в облаке 
+### Planned for V4 — infrastructure
 
-### Установка и запуск локально
+- Move the service from `docker-compose` to Kubernetes, using helm charts from the same [bitnami/charts](https://github.com/bitnami/charts).
+- Full observability on top of the cluster: logs through `fluentd`, metrics through `prometheus`,
+  dashboards in `grafana`, traces in `jaeger` — ideally via operators watching those resources,
+  with an export path into a database.
+- Replace the Nginx load balancer with an Ingress operator.
+- Configure `AFFINITY` so that pods of the same microservice are not scheduled onto one node.
+- CI/CD: [fluxcd](https://fluxcd.io/) for CD, GitHub Actions for CI.
+
+### Planned for V5 — cloud
+
+- Describe managed Kubernetes infrastructure in Terraform, converting the `yaml` with [k2tf](https://github.com/sl1pm4t/k2tf).
+- Separate prod and dev environments in the cloud.
+
+### Running locally
+
 - `cd frontend && npm install`
 - `cd .. && make docker-local`
-- Дальше ждем по логам, когда всё поднимется
-- После чего применяем миграции:
+- Wait for everything to come up; follow the logs
+- Then apply the migrations:
+
 ```
-db=pg make migrate-up          # Создаём таблицы и индексы для postgres
-make create-kafka-topic-local  # Создаём топик в кафке
+db=pg make migrate-up          # create Postgres tables and indexes
+make create-kafka-topic-local  # create the Kafka topic
 ```
 
-- Стучимся в localhost:80 по эндпоинтам:
-```
-POST /api/user/register          # Регистрация
-POST /api/user/login             # Аутентификация
-POST /api/user/refresh           # Эндпоинт для фронтенда для обновления JWT токенов
-POST /api/chat/rooms             # Создание Room
-GET /api/chat/rooms              # Получение списка всех Room
-GET /api/chat/rooms/{id}/clients # Получение списка всех подключенных клиентов
-WS /api/chat/rooms/{id}          # Подключение к выбранной Room
-```
-- Наслаждаемся) Приятнее всего использовать `Postman` в качестве клиента сервиса. В папке `tests/postman` необходимая для тестов коллекция. 
+- Endpoints are served on localhost:80:
 
-### Установка и запуск в облаке
-- Получаем приватный ключ от владельца виртуалки
-- Копируем репозиторий, который хотим задеплоить, внутрь виртуалки. Но перед этим надо согласовать с владельцем виртуалки на случай нахождения там файлов, которые не успели перенести в основной репозиторий:
-`scp -r rooms user1@rooms.servebeer.com:rooms`
+```
+POST /api/user/register          # sign up
+POST /api/user/login             # sign in
+POST /api/user/refresh           # JWT refresh, used by the frontend
+POST /api/chat/rooms             # create a room
+GET  /api/chat/rooms             # list rooms
+GET  /api/chat/rooms/{id}/clients # list clients connected to a room
+WS   /api/chat/rooms/{id}        # connect to a room
+```
+
+- `Postman` is the most convenient client for trying it out; the collection is in `tests/postman`.
+
+### Deploying to the cloud
+
+- Get the private key from the VM owner.
+- Copy the repository onto the VM — check with the owner first, in case files there have not yet
+  been moved into the main repository:
+  `scp -r rooms user1@rooms.servebeer.com:rooms`
 - `ssh user1@rooms.servebeer.com`
 - `cd rooms/frontend && rm -rf node_modules .next package-lock.json`
--  `npm cache clean --force`
+- `npm cache clean --force`
 - `npm install`
 - `cd .. && make docker-dev`
-- Дальше ждем по логам, когда всё поднимется
-- После чего применяем миграции:
+- Wait for everything to come up; follow the logs
+- Then apply the migrations:
+
 ```
-db=pg make migrate-up          # Создаём таблицы и индексы для postgres
-make create-kafka-topic-dev  # Создаём топик в кафке
+db=pg make migrate-up        # create Postgres tables and indexes
+make create-kafka-topic-dev  # create the Kafka topic
 ```
+
 - [rooms.servebeer.com](https://rooms.servebeer.com)
 
-### Брал вдохновения из источников:
-- [10 минутное видео на ютубе](https://www.youtube.com/watch?v=xyLO8ZAk2KE)
-- 12 глава книги [System design Алекс Сюй](https://www.piter.com/collection/programmirovanie-osnovy-i-algoritmy/product/system-design-podgotovka-k-slozhnomu-intervyu)
-- [видео подлиннее](https://www.youtube.com/watch?v=vvhC64hQZMk)
+### Sources of inspiration
+
+- [A 10-minute video on YouTube](https://www.youtube.com/watch?v=xyLO8ZAk2KE)
+- Chapter 12 of *System Design Interview* by Alex Xu
+- [A longer video](https://www.youtube.com/watch?v=vvhC64hQZMk)
